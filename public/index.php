@@ -38,53 +38,91 @@ if ($method === 'GET' && $path === '/db-check') {
 }
 
 if ($method === 'POST' && $path === '/patients') {
-  $name  = trim($_POST['name'] ?? '');
-  $birth = trim($_POST['birth_date'] ?? '');
-  $phone = trim($_POST['phone'] ?? '');
-  $cell  = trim($_POST['cellphone'] ?? '');
-  $email = trim($_POST['email'] ?? '');
+  $name  = trim($_POST['name'] ?? '');
+  // Adicionar a coleta do CPF
+  $cpf   = trim($_POST['cpf'] ?? ''); 
+  $birth = trim($_POST['birth_date'] ?? '');
+  $phone = trim($_POST['phone'] ?? '');
+  $cell  = trim($_POST['cellphone'] ?? '');
+  $email = trim($_POST['email'] ?? '');
 
-  $err = [];
-  if (mb_strlen($name) < 3) {
-    $err[] = 'Nome deve ter ao menos 3 caracteres.';
-  }
-  if ($email !== '' && !filter_var($email, FILTER_VALIDATE_EMAIL)) {
-    $err[] = 'E-mail inválido.';
-  }
-  if ($birth !== '' && !preg_match('/^\d{4}-\d{2}-\d{2}$/', $birth)) {
-    $err[] = 'Data no formato YYYY-MM-DD.';
+  $err = [];
+  
+  // 1. Validação do Nome (mínimo 3 caracteres E apenas letras/espaços/acentos)
+  if (mb_strlen($name) < 3) {
+    $err[] = 'Nome deve ter ao menos 3 caracteres.';
+  }
+  // O SQL já valida que só há letras, mas é bom alertar o usuário antes.
+  if (!preg_match('/^[A-Za-zÀ-ÿ\s]+$/u', $name)) { 
+     $err[] = 'Nome não deve conter números ou caracteres especiais.';
+  }
+
+  // 2. Validação do CPF (Obrigatório e 11 dígitos numéricos)
+  if (mb_strlen($cpf) !== 11) {
+    $err[] = 'CPF deve ter 11 dígitos.';
+  } elseif (!preg_match('/^\d{11}$/', $cpf)) {
+    $err[] = 'CPF deve conter apenas números.';
+  }
+  // Nota: Não foi adicionada aqui a validação de dígito verificador do CPF, 
+  // que seria o ideal, mas a regex simples resolve o bug de aceitar letras.
+  
+  // 3. Validação do E-mail
+  if ($email !== '' && !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+    $err[] = 'E-mail inválido.';
+  }
+  
+  // 4. Validação da Data de Nascimento (Formato e data futura - opcional)
+  if ($birth !== '' && !preg_match('/^\d{4}-\d{2}-\d{2}$/', $birth)) {
+    $err[] = 'Data no formato YYYY-MM-DD.';
+  }
+  // O SQL já impede datas futuras, mas podemos adicionar uma validação mais amigável:
+  if ($birth !== '' && strtotime($birth) > time()) {
+      $err[] = 'Data de nascimento não pode ser futura.';
   }
 
-  if ($err) {
-    $msg = '<div class="alert error"><strong>Erro:</strong><ul><li>'
-      . implode('</li><li>', array_map('h', $err))
-      . '</li></ul></div>';
-    echo page_form($msg, compact('name', 'birth', 'phone', 'cell', 'email'));
-    exit;
-  }
+  // 5. Validação de Telefone (opcional, apenas números)
+  if ($phone !== '' && !preg_match('/^[0-9]{8,15}$/', $phone)) {
+    $err[] = 'Telefone (fixo) deve conter apenas números.';
+  }
+  if ($cell !== '' && !preg_match('/^[0-9]{8,15}$/', $cell)) {
+    $err[] = 'Celular deve conter apenas números.';
+  }
+  
+  if ($err) {
+    $msg = '<div class="alert error"><strong>Erro:</strong><ul><li>'
+      . implode('</li><li>', array_map('h', $err))
+      . '</li></ul></div>';
+    // Incluindo o 'cpf' no array de dados antigos para preencher o formulário
+    echo page_form($msg, compact('name', 'cpf', 'birth', 'phone', 'cell', 'email'));
+    exit;
+  }
 
-  try {
-    $pdo = Db::conn();
-    $st = $pdo->prepare(
-      'INSERT INTO patients (name, birth_date, phone, cellphone, email) VALUES (:n,:b,:p,:c,:e)'
-    );
-    $st->execute([
-      ':n' => $name ?: null,
-      ':b' => $birth ?: null,
-      ':p' => $phone ?: null,
-      ':c' => $cell ?: null,
-      ':e' => $email ?: null,
-    ]);
+  try {
+    $pdo = Db::conn();
+    $st = $pdo->prepare(
+      // ATUALIZAÇÃO: Adicionando 'cpf' no INSERT SQL
+      'INSERT INTO patients (name, cpf, birth_date, phone, cellphone, email) VALUES (:n,:c_p,:b,:p,:c,:e)'
+    );
+    $st->execute([
+      ':n' => $name ?: null,
+      // Adicionando o CPF
+      ':c_p' => $cpf ?: null,
+      ':b' => $birth ?: null,
+      ':p' => $phone ?: null,
+      ':c' => $cell ?: null,
+      ':e' => $email ?: null,
+    ]);
 
-    echo page_form('<div class="alert success">Paciente cadastrado com sucesso.</div>');
-    exit;
-  } catch (Throwable $e) {
-    echo page_form(
-      '<div class="alert error"><strong>Erro ao salvar:</strong> ' . h($e->getMessage()) . '</div>',
-      compact('name', 'birth', 'phone', 'cell', 'email')
-    );
-    exit;
-  }
+    echo page_form('<div class="alert success">Paciente cadastrado com sucesso.</div>');
+    exit;
+  } catch (Throwable $e) {
+    echo page_form(
+      '<div class="alert error"><strong>Erro ao salvar:</strong> ' . h($e->getMessage()) . '</div>',
+      // Incluindo o 'cpf' no array de dados antigos para preencher o formulário
+      compact('name', 'cpf', 'birth', 'phone', 'cell', 'email')
+    );
+    exit;
+  }
 }
 
 if ($method === 'GET' && $path === '/') {
