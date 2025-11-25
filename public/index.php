@@ -6,7 +6,7 @@ require __DIR__ . '/../vendor/autoload.php';
 use App\Health;
 use App\Db;
 use App\Controllers\PatientController;
-use App\Models\PatientsModel;
+use App\Models\PatientModel;
 
 // --- Funções Auxiliares (mantidas aqui para endpoints de API) ---
 
