@@ -106,9 +106,7 @@ $cpf = App\Helpers\ValidationHelper::h($data['cpf'] ?? '');
 <div class="container">
     <h1>Cadastro de Pacientes</h1>
     <p class="desc">Preencha seus dados para contato e agendamento.</p>
-
     <?= $flash ?>
-
     <form method="post" action="/patients" novalidate>
         <div><label for="name">Nome completo *</label><input type="text" id="name" name="name" value="<?= $name ?>" required></div>
         <div><label for="cpf">CPF *</label><input type="text" id="cpf" name="cpf" value="<?= $cpf ?>" placeholder="Somente números"></div>
@@ -123,8 +121,6 @@ $cpf = App\Helpers\ValidationHelper::h($data['cpf'] ?? '');
         
         <p class="muted"><small class="hint">Ao enviar, você concorda com o uso dos seus dados para contato e agendamento.</small></p>
     </form>
-    
-    <p class="muted">Endpoints: <code>/health</code> • <code>/db-check</code> • <code>POST /patients</code></p>
 </div>
 </body>
 </html>
