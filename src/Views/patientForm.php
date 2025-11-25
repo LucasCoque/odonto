@@ -22,7 +22,7 @@ $cpf = App\Helpers\ValidationHelper::h($data['cpf'] ?? '');
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>Cadastro de Pacientes</title>
         <!-- Agora linkamos o CSS externo -->
-        <link rel="stylesheet" href="style.css">
+        <link rel="stylesheet" href="/public/css/style.css">
     </head>
 <body>
 <div class="container">
