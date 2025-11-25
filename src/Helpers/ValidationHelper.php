@@ -8,53 +8,18 @@
         return htmlspecialchars($string, ENT_QUOTES, 'UTF-8');
         }
 
-     public static function validaCpf(string $cpf): bool
-    {
-        // 1. Remove caracteres não numéricos (garante que só dígitos fiquem).
-        // Isso atende ao seu requisito de validação de CPF "sem letras, espaço em branco 
-        // ou qualquer outro tipo de caracter" ao limpar a entrada.
-        $cpf = preg_replace('/[^0-9]/', '', $cpf);
+     function validaCpf(string $cpf): bool {
+    $cpf = preg_replace('/[^0-9]/', '', $cpf);
+    if (strlen($cpf) != 11 || preg_match('/(\d)\1{10}/', $cpf)) return false;
 
-        // 2. Verifica se o CPF tem 11 dígitos
-        if (strlen($cpf) != 11) {
-            return false;
-        }
-
-        // 3. Verifica se todos os dígitos são iguais (ex: 111.111.111-11) - Inválido
-        // O ponto de interrogação ? torna o quantificador preguiçoso
-        if (preg_match('/^(\d)\1{10}$/', $cpf)) {
-            return false;
-        }
-
-        // --- Lógica de cálculo dos Dígitos Verificadores (DV) ---
-
-        // 4. Calcula o primeiro dígito verificador
-        $soma = 0;
-        for ($i = 0; $i < 9; $i++) {
-            $soma += (int)$cpf[$i] * (10 - $i);
-        }
-        $primeiroDigitoVerificador = (($soma % 11) < 2) ? 0 : 11 - ($soma % 11);
-
-        // 5. Verifica o primeiro dígito
-        if ((int)$cpf[9] != $primeiroDigitoVerificador) {
-            return false;
-        }
-
-        // 6. Calcula o segundo dígito verificador
-        $soma = 0;
-        for ($i = 0; $i < 10; $i++) {
-            $soma += (int)$cpf[$i] * (11 - $i);
-        }
-        $segundoDigitoVerificador = (($soma % 11) < 2) ? 0 : 11 - ($soma % 11);
-
-        // 7. Verifica o segundo dígito
-        if ((int)$cpf[10] != $segundoDigitoVerificador) {
-            return false;
-        }
-
-        // 8. Se passou em todas as verificações, o CPF é válido
-        return true;
+    for ($t = 9; $t < 11; $t++) {
+        $d = 0;
+        for ($c = 0; $c < $t; $c++) $d += $cpf[$c] * (($t + 1) - $c);
+        $d = ((10 * $d) % 11) % 10;
+        if ($cpf[$c] != $d) return false;
     }
+    return true;
+}
 
 
         public static function validaCelular($celular){
