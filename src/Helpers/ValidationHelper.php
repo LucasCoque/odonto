@@ -4,6 +4,10 @@
 
     class ValidationHelper{
 
+        public static function h($string){   
+        return htmlspecialchars($string, ENT_QUOTES, 'UTF-8');
+        }
+
         public static function validaCpf($cpf){
             // Elimina possivel mascara
             $cpf = preg_replace( '/[^0-9]/is', '', $cpf );
