@@ -1,6 +1,6 @@
 <?php
 
-    class ValidaCadastro{
+    class ValidationHelper{
 
         public static function validaCpf($cpf){
             // Elimina possivel mascara
