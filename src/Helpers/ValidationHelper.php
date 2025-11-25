@@ -1,5 +1,7 @@
 <?php
 
+    namespace App\Helpers;
+
     class ValidationHelper{
 
         public static function validaCpf($cpf){
