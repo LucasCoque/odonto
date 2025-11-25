@@ -86,7 +86,7 @@ class PatientController
         if ($email !== '' && !filter_var($email, FILTER_VALIDATE_EMAIL)) $err[] = 'E-mail inválido.';
         
         // 3. CPF
-        if ($cpf !== '' && !ValidationHelper::validarCPF($cpf)) $err[] = 'CPF inválido.';
+        if ($cpf !== '' && !ValidationHelper::validaCPF($cpf)) $err[] = 'CPF inválido.';
         
         // 4. Telefone
         $phone_clean = preg_replace('/\D/', '', $phone);
