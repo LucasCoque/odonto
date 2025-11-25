@@ -22,7 +22,85 @@ $cpf = App\Helpers\ValidationHelper::h($data['cpf'] ?? '');
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>Cadastro de Pacientes</title>
         <!-- Agora linkamos o CSS externo -->
-        <link rel="stylesheet" href="/public/css/style.css">
+        <style>
+    body {
+        font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+        margin: 2rem;
+        background-color: #fff;
+        color: #1d1d1f;
+    }
+    .container {
+        max-width: 640px;
+        margin: 0 auto;
+    }
+    h1 {
+        margin-bottom: 0.5rem;
+        font-size: 2rem;
+        font-weight: 600;
+        letter-spacing: -0.02em;
+    }
+    p.desc {
+        color: #555;
+        margin-top: 0;
+        font-size: 1rem;
+    }
+    form {
+        display: grid;
+        gap: 12px;
+        margin-top: 16px;
+    }
+    label {
+        font-weight: 600;
+        margin-bottom: 4px;
+        display: block;
+        font-size: 0.95rem;
+    }
+    input[type="text"],
+    input[type="date"],
+    input[type="email"],
+    input[type="tel"],
+    select {
+        padding: 10px 12px;
+        border-radius: 10px;
+        border: 1px solid #d2d2d7;
+        background-color: #f5f5f7;
+        font-size: 1rem;
+        width: 100%;
+        transition: 0.2s border-color ease;
+    }
+    input:focus,
+    select:focus {
+        outline: none;
+        border-color: #0071e3;
+        background-color: #fff;
+    }
+    button {
+        margin-top: 10px;
+        background-color: #0071e3;
+        color: #fff;
+        border: none;
+        padding: 12px 18px;
+        border-radius: 12px;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: 0.2s background-color ease;
+    }
+    button:hover {
+        background-color: #0360c7;
+    }
+    .error {
+        color: #d70015;
+        font-size: 0.9rem;
+        margin-top: -8px;
+        margin-bottom: 8px;
+    }
+    .success {
+        color: #008009;
+        font-size: 0.9rem;
+        margin-top: -8px;
+        margin-bottom: 8px;
+    }
+</style> 
     </head>
 <body>
 <div class="container">
