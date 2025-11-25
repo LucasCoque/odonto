@@ -8,30 +8,34 @@
         return htmlspecialchars($string, ENT_QUOTES, 'UTF-8');
         }
 
-        public static function validaCpf($cpf){
-            // Elimina possivel mascara
-            $cpf = preg_replace( '/[^0-9]/is', '', $cpf );
+       public static function validaCpf($cpf)
+{
+    $cpf = preg_replace('/\D/', '', $cpf);
 
-            // Verifica se o numero de digitos informados é igual a 11 
-            if (strlen($cpf) != 11) {
-                return false;
-            }
-            // Verifica se nenhuma das sequências invalidas abaixo foi digitada. Caso afirmativo, retorna falso
-            if (preg_match('/(\d)\1{10}/', $cpf)) {
-                return false;
-            }
-            // Calcula os digitos verificadores para verificar se o CPF é válido
-            for ($t = 9; $t < 11; $t++) {
-                for ($d = 0, $c = 0; $c < $t; $c++) {
-                    $d += $cpf[$c] * (($t + 1) - $c);
-                }
-                $d = ((10 * $d) % 11) % 10;
-                if ($cpf[$c] != $d) {
-                    return false;
-                }
-            }
-            return true;
+    if (strlen($cpf) != 11) {
+        return false;
+    }
+
+    if (preg_match('/(\d)\1{10}/', $cpf)) {
+        return false;
+    }
+
+    for ($t = 9; $t < 11; $t++) {
+        $soma = 0;
+        for ($c = 0; $c < $t; $c++) {
+            $soma += $cpf[$c] * (($t + 1) - $c);
         }
+        $digito = (10 * $soma) % 11;
+        if ($digito == 10) $digito = 0;
+
+        if ($cpf[$t] != $digito) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
 
         public static function validaCelular($celular){
             // Elimina possivel mascara
