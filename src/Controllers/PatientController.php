@@ -27,7 +27,7 @@ class PatientController
         ob_start();
         $data = $old_data;
         $flash = $flash;
-        require __DIR__ . '/../Views/patient_form.php';
+        require __DIR__ . '/../Views/patientForm.php';
         echo ob_get_clean();
     }
 
