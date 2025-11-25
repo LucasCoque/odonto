@@ -8,7 +8,7 @@
         return htmlspecialchars($string, ENT_QUOTES, 'UTF-8');
         }
 
-     function validaCpf(string $cpf): bool {
+    public static function validaCpf(string $cpf): bool {
     $cpf = preg_replace('/[^0-9]/', '', $cpf);
     if (strlen($cpf) != 11 || preg_match('/(\d)\1{10}/', $cpf)) return false;
 
